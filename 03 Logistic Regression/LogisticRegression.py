@@ -10,12 +10,19 @@ class LogisticRegression():
         self.n_iters = n_iters
         self.weights = None
         self.bias = None
-
+        self.mean = None
+        self.std = None 
+        
+    def _standardize(self, X):
+        return (X - self.mean) / self.std
     def fit(self, X, y):
         n_samples, n_features = X.shape
         self.weights = np.zeros(n_features)
         self.bias = 0
-
+        self.mean = np.mean(X, axis=0)
+        self.std = np.std(X, axis=0)
+        X = self._standardize(X)
+        
         for _ in range(self.n_iters):
             linear_pred = np.dot(X, self.weights) + self.bias
             predictions = sigmoid(linear_pred)
@@ -28,6 +35,7 @@ class LogisticRegression():
 
 
     def predict(self, X):
+        X = self._standardize(X)
         linear_pred = np.dot(X, self.weights) + self.bias
         y_pred = sigmoid(linear_pred)
         class_pred = [0 if y<=0.5 else 1 for y in y_pred]
